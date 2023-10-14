@@ -110,6 +110,7 @@ function calculateYearDiscount(year, price) {
 
     return year;
   };
+  // -----------
   // 3% cheaper for each year
   return price - ((diffrence(year) * 3) / 100) * price;
 }
@@ -124,9 +125,9 @@ function calculatePrice(info) {
   const year = info.year;
   price = calculateYearDiscount(year, price);
 
-  // Calculate Level Price (اگر متدی برای محاسبه قیمت بر اساس لول وجود دارد)
+  // Calculate Level Price
   const level = info.level;
-  // price = calculateLevel(level, price); // اگر متد محاسبه لول وجود دارد
+  // price = calculateLevel(level, price);
 
   console.log(price);
 }
