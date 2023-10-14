@@ -2,6 +2,7 @@
 const form = document.querySelector("#request-quote");
 
 // Events
+// The afterload function is executed when the entire page is loaded.
 document.addEventListener("DOMContentLoaded", afterLoad);
 document.addEventListener("submit", submitForm);
 
@@ -10,18 +11,30 @@ function afterLoad() {
   displayYears();
 }
 // submit form
+// read form value.
+function readFormValues() {
+  const make = document.querySelector("#make").value;
+  const year = document.querySelector("#year").value;
+  const level = document.querySelector('input[name="level"]:checked').value;
+  return { make, year, level };
+}
+// validation form.
+function validateForm(make, year, level) {
+  if (make === "" || year === "" || level === "") {
+    displayMsg("لطفاً مقادیر فرم را با دقت پر نمایید. با تشکر");
+    return false;
+  }
+  return true;
+}
+// form submit.
 function submitForm(e) {
   e.preventDefault();
 
   // read value from the form
-  const make = document.querySelector("#make").value;
-  const year = document.querySelector("#year").value;
-  const level = document.querySelector('input[name="level"]:checked').value;
+  const { make, year, level } = readFormValues();
 
-  // check the value of fileds are correct
-  if (make === "" || year === "" || level === "") {
-    displayMsg("لطفاً مقادیر فرم را با دقت پر نمایید. با تشکر");
-  } else {
+  // validate the form
+  if (validateForm(make, year, level)) {
     // STEP1: get info
     let insuranceCase = {
       make: make,
@@ -36,33 +49,21 @@ function submitForm(e) {
   }
 }
 
-function calculatePrice(info) {
-  let price = 0,
-    base = 2000000;
-
-  // + Calculate Make
-  /* 
-    make:1      =>      1.15
-    make:2      =>      1.30
-    make:3      =>      1.80
-    */
-  const make = info.make;
+function calculateMakePrice(make, base) {
   switch (make) {
     case "1":
-      price = base * 1.15;
-      break;
+      return base * 1.15;
     case "2":
-      price = base * 1.3;
-      break;
+      return base * 1.3;
     case "3":
-      price = base * 1.8;
-      break;
+      return base * 1.8;
+    default:
+      return base;
   }
+}
 
-  // + Calculate Year
-  // get the year
-  const year = info.year;
-  // diffrence = getYearDiffrence(year)
+function calculateYearDiscount(year, price) {
+  // Convert to number
   const diffrence = function (year) {
     // Convert to number
     let persianNumbers = [
@@ -103,19 +104,31 @@ function calculatePrice(info) {
     // get max year
     const now = new Date().toLocaleDateString("fa-IR");
     let nowYear = now.slice(0, 4);
+    // convert to number.
     let max = fixNumbers(nowYear);
     year = max - year;
 
     return year;
   };
   // 3% cheaper for each year
-  price = price - ((diffrence(year) * 3) / 100) * price;
+  return price - ((diffrence(year) * 3) / 100) * price;
+}
+
+function calculatePrice(info) {
+  const base = 2000000;
+
+  // Calculate Make Price
+  let price = calculateMakePrice(info.make, base);
+
+  // Calculate Year Discount
+  const year = info.year;
+  price = calculateYearDiscount(year, price);
+
+  // Calculate Level Price (اگر متدی برای محاسبه قیمت بر اساس لول وجود دارد)
+  const level = info.level;
+  // price = calculateLevel(level, price); // اگر متد محاسبه لول وجود دارد
 
   console.log(price);
-
-  // + get the level
-  const level = info.level;
-  price = calculateLevel(level, price);
 }
 
 function calculateLevel(level, price) {
