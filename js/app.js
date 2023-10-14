@@ -65,42 +65,7 @@ function calculateMakePrice(make, base) {
 function calculateYearDiscount(year, price) {
   // Convert to number
   const diffrence = function (year) {
-    // Convert to number
-    let persianNumbers = [
-        /۰/g,
-        /۱/g,
-        /۲/g,
-        /۳/g,
-        /۴/g,
-        /۵/g,
-        /۶/g,
-        /۷/g,
-        /۸/g,
-        /۹/g,
-      ],
-      arabicNumbers = [
-        /٠/g,
-        /١/g,
-        /٢/g,
-        /٣/g,
-        /٤/g,
-        /٥/g,
-        /٦/g,
-        /٧/g,
-        /٨/g,
-        /٩/g,
-      ],
-      fixNumbers = function (str) {
-        if (typeof str === "string") {
-          for (var i = 0; i < 10; i++) {
-            str = str
-              .replace(persianNumbers[i], i)
-              .replace(arabicNumbers[i], i);
-          }
-        }
-        return parseInt(str);
-      };
-
+    fixNumbers();
     // get max year
     const now = new Date().toLocaleDateString("fa-IR");
     let nowYear = now.slice(0, 4);
@@ -110,7 +75,6 @@ function calculateYearDiscount(year, price) {
 
     return year;
   };
-  // -----------
   // 3% cheaper for each year
   return price - ((diffrence(year) * 3) / 100) * price;
 }
@@ -165,8 +129,8 @@ function displayMsg(msg) {
   }, 5000);
 }
 
-// Show Years
-function displayYears() {
+// fix numbers and Number conversion function.
+fixNumbers = function (str = "") {
   // Convert to number
   let persianNumbers = [
       /۰/g,
@@ -191,16 +155,19 @@ function displayYears() {
       /٧/g,
       /٨/g,
       /٩/g,
-    ],
-    fixNumbers = function (str = "") {
-      if (typeof str === "string") {
-        for (var i = 0; i < 10; i++) {
-          str = str.replace(persianNumbers[i], i).replace(arabicNumbers[i], i);
-        }
-      }
-      return parseInt(str);
-    };
+    ];
+  if (typeof str === "string") {
+    for (var i = 0; i < 10; i++) {
+      str = str.replace(persianNumbers[i], i).replace(arabicNumbers[i], i);
+    }
+  }
+  return parseInt(str);
+};
 
+// Show Years
+function displayYears() {
+  // convert to number
+  fixNumbers();
   // get now years
   let curentYear = new Date().toLocaleDateString("fa-IR");
 
