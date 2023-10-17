@@ -1,4 +1,4 @@
-// Variables
+// Variables(select form)
 const form = document.querySelector("#request-quote");
 
 // Events
@@ -11,25 +11,30 @@ const config = {
   // Default price.
   price: 0,
   base: 2000000,
-  // The coefficient of the selected machines.
-  make1: 1.15,
-  make2: 1.3,
-  make3: 1.8,
+  make: {
+    // The coefficient of the selected machines.
+    make1: 1.15,
+    make2: 1.3,
+    make3: 1.8,
+  },
   // The difference of the last 20 years.
   yearDifference: 20,
-  // 30% increase.
-  basic: 1.3,
-  // 50% increase.
-  complete: 1.5,
+  level: {
+    // 30% increase.
+    basic: 1.3,
+    // 50% increase.
+    complete: 1.5,
+  },
 };
 
 // Functions
 function afterLoad() {
   displayYears();
 }
-// submit form
+
 // read form value.
 function readFormValues() {
+  // Variables
   const make = document.querySelector("#make").value;
   const year = document.querySelector("#year").value;
   const level = document.querySelector('input[name="level"]:checked').value;
@@ -47,7 +52,7 @@ function validateForm(make, year, level) {
 function submitForm(e) {
   e.preventDefault();
 
-  // read value from the form
+  // read value from the form.
   const { make, year, level } = readFormValues();
 
   // validate the form
@@ -58,10 +63,8 @@ function submitForm(e) {
       year: year,
       level: level,
     };
-
     // STEP2: calculate
     calculatePrice(insuranceCase);
-
     // STEP3: show result message box
   }
 }
@@ -69,11 +72,11 @@ function submitForm(e) {
 function calculateMakePrice(make, base) {
   switch (make) {
     case "1":
-      return config.base * config.make1;
+      return config.base * config.make.make1;
     case "2":
-      return config.base * config.make2;
+      return config.base * config.make.make2;
     case "3":
-      return config.base * config.make3;
+      return config.base * config.make.make3;
     default:
       return base;
   }
@@ -81,17 +84,6 @@ function calculateMakePrice(make, base) {
 
 function calculateYearDiscount(year, price) {
   // Convert to number
-  const diffrence = function (year) {
-    fixNumbers();
-    // get max year
-    const now = new Date().toLocaleDateString("fa-IR");
-    let nowYear = now.slice(0, 4);
-    // convert to number.
-    let max = fixNumbers(nowYear);
-    year = max - year;
-
-    return year;
-  };
   // 3% cheaper for each year
   return price - ((diffrence(year) * 3) / 100) * price;
 }
@@ -175,41 +167,37 @@ fixNumbers = function (str = "") {
   return parseInt(str);
 };
 
-// Show Years
+// Show Years.
 function displayYears() {
-  // convert to number
-  fixNumbers();
-  // get now years
-  let curentYear = new Date().toLocaleDateString("fa-IR");
-
-  // Slice date
-  curentYear = curentYear.slice(0, 4);
-
-  // get max year
-  let maxYear = fixNumbers(curentYear);
-
-  // get min year
-  let minYear = maxYear - config.yearDifference;
-
   // access to the select tag
   const selectYear = document.querySelector("#year");
-
   // create first option tag for title
   // create option tag
   const optionTag = document.createElement("option");
   optionTag.innerText = `- انتخاب -`;
-  // optionTag.value = ''
   // append option to the selectYear
   selectYear.appendChild(optionTag);
-
   // create for loop for making option tag
-  for (let i = maxYear; i >= minYear; i--) {
+  for (let i = maxYear(); i >= diffrence(config.yearDifference); i--) {
     // create option tag
     const optionTag = document.createElement("option");
     optionTag.value = i;
     optionTag.innerText = `سال ${i}`;
-
     // append option to the selectYear
     selectYear.appendChild(optionTag);
   }
+}
+// Finding the difference between the highest and lowest year.get a number,And returns a year.
+const diffrence = function (year) {
+  year = maxYear() - year;
+  return year;
+};
+
+function maxYear() {
+  // get max year
+  const now = new Date().toLocaleDateString("fa-IR");
+  let nowYear = now.slice(0, 4);
+  // convert to number.
+  let max = fixNumbers(nowYear);
+  return max;
 }
