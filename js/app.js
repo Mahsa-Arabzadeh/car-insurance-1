@@ -108,9 +108,9 @@ function calculateLevel(level, price) {
   // complete=>  increase 50%
   if (level == "basic") {
     // price = price + (price * 0.30) (bara mehrdad)
-    price = price * config.basic;
+    price = price * config.level.basic;
   } else {
-    price = price * config.complete;
+    price = price * config.level.complete;
   }
   return price;
 }
