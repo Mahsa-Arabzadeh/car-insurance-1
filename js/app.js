@@ -6,6 +6,23 @@ const form = document.querySelector("#request-quote");
 document.addEventListener("DOMContentLoaded", afterLoad);
 document.addEventListener("submit", submitForm);
 
+// Config information.
+const config = {
+  // Default price.
+  price: 0,
+  base: 2000000,
+  // The coefficient of the selected machines.
+  make1: 1.15,
+  make2: 1.3,
+  make3: 1.8,
+  // The difference of the last 20 years.
+  yearDifference: 20,
+  // 30% increase.
+  basic: 1.3,
+  // 50% increase.
+  complete: 1.5,
+};
+
 // Functions
 function afterLoad() {
   displayYears();
@@ -52,11 +69,11 @@ function submitForm(e) {
 function calculateMakePrice(make, base) {
   switch (make) {
     case "1":
-      return base * 1.15;
+      return config.base * config.make1;
     case "2":
-      return base * 1.3;
+      return config.base * config.make2;
     case "3":
-      return base * 1.8;
+      return config.base * config.make3;
     default:
       return base;
   }
@@ -80,10 +97,8 @@ function calculateYearDiscount(year, price) {
 }
 
 function calculatePrice(info) {
-  const base = 2000000;
-
   // Calculate Make Price
-  let price = calculateMakePrice(info.make, base);
+  let price = calculateMakePrice(info.make, config.base);
 
   // Calculate Year Discount
   const year = info.year;
@@ -91,24 +106,20 @@ function calculatePrice(info) {
 
   // Calculate Level Price
   const level = info.level;
-  // price = calculateLevel(level, price);
+  price = calculateLevel(level, price);
 
   console.log(price);
 }
 
 function calculateLevel(level, price) {
-  /*
-        basic   =>  increase 30%
-        complete=>  increase 50%
-    */
-
+  // basic   =>  increase 30%
+  // complete=>  increase 50%
   if (level == "basic") {
     // price = price + (price * 0.30) (bara mehrdad)
-    price = price * 1.3;
+    price = price * config.basic;
   } else {
-    price = price * 1.5;
+    price = price * config.complete;
   }
-
   return price;
 }
 
@@ -178,7 +189,7 @@ function displayYears() {
   let maxYear = fixNumbers(curentYear);
 
   // get min year
-  let minYear = maxYear - 20;
+  let minYear = maxYear - config.yearDifference;
 
   // access to the select tag
   const selectYear = document.querySelector("#year");
