@@ -1,11 +1,5 @@
-// Variables(select form)
+// Variables(select form):
 const form = document.querySelector("#request-quote");
-
-// Events
-// The afterload function is executed when the entire page is loaded.
-document.addEventListener("DOMContentLoaded", afterLoad);
-document.addEventListener("submit", submitForm);
-
 // Config information.
 const config = {
   // Default price.
@@ -27,11 +21,16 @@ const config = {
   },
 };
 
-// Functions
+// Events:
+// The afterload function is executed when the entire page is loaded.
+document.addEventListener("DOMContentLoaded", afterLoad);
+document.addEventListener("submit", submitForm);
+
+// Functions:
+// when the entire page is loaded,will show displayYear().
 function afterLoad() {
   displayYears();
 }
-
 // read form value.
 function readFormValues() {
   // Variables
@@ -40,7 +39,7 @@ function readFormValues() {
   const level = document.querySelector('input[name="level"]:checked').value;
   return { make, year, level };
 }
-// validation form.
+// validation form. Checks if the inputs are empty, displays the displayMsg function.
 function validateForm(make, year, level) {
   if (make === "" || year === "" || level === "") {
     displayMsg("لطفاً مقادیر فرم را با دقت پر نمایید. با تشکر");
@@ -48,10 +47,9 @@ function validateForm(make, year, level) {
   }
   return true;
 }
-// form submit.
+// form submit. It takes the value of make, year, level and shows an invoice with price calculation.
 function submitForm(e) {
   e.preventDefault();
-
   // read value from the form.
   const { make, year, level } = readFormValues();
 
@@ -68,7 +66,7 @@ function submitForm(e) {
     // STEP3: show result message box
   }
 }
-
+// It takes the base price and multiplier(make1,make2,make3) of the car and shows a base price of each car model.
 function calculateMakePrice(make, base) {
   switch (make) {
     case "1":
@@ -83,11 +81,10 @@ function calculateMakePrice(make, base) {
 }
 
 function calculateYearDiscount(year, price) {
-  // Convert to number
   // 3% cheaper for each year
   return price - ((diffrence(year) * 3) / 100) * price;
 }
-
+// It takes the info and shows the price of each car.
 function calculatePrice(info) {
   // Calculate Make Price
   let price = calculateMakePrice(info.make, config.base);
@@ -99,10 +96,10 @@ function calculatePrice(info) {
   // Calculate Level Price
   const level = info.level;
   price = calculateLevel(level, price);
-
+  // show price:
   console.log(price);
 }
-
+// It takes the amount of the insurance level and the price and gives a price according to the type of insurance.
 function calculateLevel(level, price) {
   // basic   =>  increase 30%
   // complete=>  increase 50%
@@ -115,8 +112,8 @@ function calculateLevel(level, price) {
   return price;
 }
 
-// User Interface (UI) Functions
-// Display message box
+// User Interface (UI) Functions:
+// Display message box:get a message and return an error.
 function displayMsg(msg) {
   // create message box
   const messageBox = document.createElement("div");
@@ -131,7 +128,6 @@ function displayMsg(msg) {
     document.querySelector(".error").remove();
   }, 5000);
 }
-
 // fix numbers and Number conversion function.
 fixNumbers = function (str = "") {
   // Convert to number
@@ -166,8 +162,7 @@ fixNumbers = function (str = "") {
   }
   return parseInt(str);
 };
-
-// Show Years.
+// Show Years into the DOM.
 function displayYears() {
   // access to the select tag
   const selectYear = document.querySelector("#year");
@@ -192,7 +187,7 @@ const diffrence = function (year) {
   year = maxYear() - year;
   return year;
 };
-
+// It shows the current year.
 function maxYear() {
   // get max year
   const now = new Date().toLocaleDateString("fa-IR");
