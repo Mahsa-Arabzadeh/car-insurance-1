@@ -1,4 +1,4 @@
-# Car Insurance Price Calculator
+# Car Insurance Price Calculator <img src="https://icons8.com/icon/7cAsjFNxQLl6/car-sharing">
 ---
 ## Project Description:
 > This JavaScript-based project, named "Car Insurance Price Calculator," allows users to input their car's name and manufacturing year. Once the information is provided, the system calculates the insurance cost for that specific year. This simple yet effective tool provides users with instant insurance price estimates.
