@@ -62,8 +62,9 @@ function submitForm(e) {
       level: level,
     };
     // STEP2: calculate
-    calculatePrice(insuranceCase);
+    // calculatePrice(insuranceCase);
     // STEP3: show result message box
+    showResult(calculatePrice(insuranceCase), insuranceCase);
   }
 }
 // It takes the base price and multiplier(make1,make2,make3) of the car and shows a base price of each car model.
@@ -97,7 +98,7 @@ function calculatePrice(info) {
   const level = info.level;
   price = calculateLevel(level, price);
   // show price:
-  console.log(price);
+  return price;
 }
 // It takes the amount of the insurance level and the price and gives a price according to the type of insurance.
 function calculateLevel(level, price) {
@@ -111,7 +112,6 @@ function calculateLevel(level, price) {
   }
   return price;
 }
-
 // User Interface (UI) Functions:
 // Display message box:get a message and return an error.
 function displayMsg(msg) {
@@ -196,3 +196,200 @@ function maxYear() {
   let max = fixNumbers(nowYear);
   return max;
 }
+
+function showResult(price, info) {
+  // access to the div result.
+  const result = document.querySelector("#result");
+
+  // create div for showing price
+  const div = document.createElement("div");
+
+  // convert make.
+  let make = info.make;
+
+  switch (make) {
+    case 1:
+      make = "پراید";
+      break;
+    case 2:
+      make = "اپتیما";
+      break;
+    case 3:
+      make = "پورشه";
+      break;
+  }
+
+  // convert level to the persian.
+  let level = info.level;
+  if (level == "basic") {
+    level = "ساده";
+  } else {
+    level = "کامل";
+  }
+
+  // template for show result
+  div.innerHTML = `
+  <p class="header">خلاصه فاکتور</p>
+  <p>Car Model: ${make}</p>
+  <p>Date Create: ${info.year}</p>
+  <p>Car Level: ${level}</p>
+  <p class="total">Final Price: ${price}</p>`;
+
+  // show spinner:
+  const spinner = document.querySelector("#loading img");
+  spinner.style.display = "block";
+
+  setTimeout(() => {
+    // hide spinner after 3 second.
+    spinner.style.display = "none";
+    // append div to the result.
+    result.appendChild(div);
+  }, 3000);
+}
+
+// // oop:
+// class Calculateprice {
+//   constructor(make, year, level, price, info) {
+//     (this.make = make),
+//       (this.year = year),
+//       (this.level = level),
+//       (this.price = price),
+//       (this.info = info);
+//   }
+//   calculateMakePrice(make, base) {
+//     switch (make) {
+//       case "1":
+//         return config.base * config.make.make1;
+//       case "2":
+//         return config.base * config.make.make2;
+//       case "3":
+//         return config.base * config.make.make3;
+//       default:
+//         return base;
+//     }
+//   }
+//   calculateYearDiscount() {
+//     // 3% cheaper for each year
+//     return this.price - ((diffrence(this.year) * 3) / 100) * this.price;
+//   }
+//   calculatePrice(info) {
+//     // Calculate Make Price
+//     let price = calculateMakePrice(info.make, config.base);
+
+//     // Calculate Year Discount
+//     const year = info.year;
+//     price = calculateYearDiscount(year, price);
+
+//     // Calculate Level Price
+//     const level = info.level;
+//     price = calculateLevel(level, price);
+//     // show price:
+//     console.log(price);
+//   }
+//   calculateLevel(level, price) {
+//     // basic   =>  increase 30%
+//     // complete=>  increase 50%
+//     if (level == "basic") {
+//       // price = price + (price * 0.30) (bara mehrdad)
+//       price = price * config.level.basic;
+//     } else {
+//       price = price * config.level.complete;
+//     }
+//     return price;
+//   }
+//   diffrence(year) {
+//     year = maxYear() - year;
+//     return year;
+//   }
+//   maxYear() {
+//     // get max year
+//     const now = new Date().toLocaleDateString("fa-IR");
+//     let nowYear = now.slice(0, 4);
+//     // convert to number.
+//     let max = fixNumbers(nowYear);
+//     return max;
+//   }
+// }
+// // show price
+// class Showprice {
+//   constructor(make, year, level) {
+//     (this.make = make), (this.year = year), (this.level = level);
+//   }
+//   validateForm(make, year, level) {
+//     if (make === "" || year === "" || level === "") {
+//       displayMsg("لطفاً مقادیر فرم را با دقت پر نمایید. با تشکر");
+//       return false;
+//     }
+//     return true;
+//   }
+//   displayMsg(msg) {
+//     // create message box
+//     const messageBox = document.createElement("div");
+//     messageBox.classList = "error";
+//     messageBox.innerText = msg;
+
+//     // show message
+//     form.insertBefore(messageBox, document.querySelector(".form-group"));
+
+//     // remove message box
+//     setTimeout(() => {
+//       document.querySelector(".error").remove();
+//     }, 5000);
+//   }
+//   fixNumbers(str = "") {
+//     // Convert to number
+//     let persianNumbers = [
+//         /۰/g,
+//         /۱/g,
+//         /۲/g,
+//         /۳/g,
+//         /۴/g,
+//         /۵/g,
+//         /۶/g,
+//         /۷/g,
+//         /۸/g,
+//         /۹/g,
+//       ],
+//       arabicNumbers = [
+//         /٠/g,
+//         /١/g,
+//         /٢/g,
+//         /٣/g,
+//         /٤/g,
+//         /٥/g,
+//         /٦/g,
+//         /٧/g,
+//         /٨/g,
+//         /٩/g,
+//       ];
+//     if (typeof str === "string") {
+//       for (var i = 0; i < 10; i++) {
+//         str = str.replace(persianNumbers[i], i).replace(arabicNumbers[i], i);
+//       }
+//     }
+//     return parseInt(str);
+//   }
+//   displayYears() {
+//     // access to the select tag
+//     const selectYear = document.querySelector("#year");
+//     // create first option tag for title
+//     // create option tag
+//     const optionTag = document.createElement("option");
+//     optionTag.innerText = `- انتخاب -`;
+//     // append option to the selectYear
+//     selectYear.appendChild(optionTag);
+//     // create for loop for making option tag
+//     for (let i = maxYear(); i >= diffrence(config.yearDifference); i--) {
+//       // create option tag
+//       const optionTag = document.createElement("option");
+//       optionTag.value = i;
+//       optionTag.innerText = `سال ${i}`;
+//       // append option to the selectYear
+//       selectYear.appendChild(optionTag);
+//     }
+//   }
+// }
+
+// let test = new Calculateprice("پراید", 1400, "basic", 20000);
+
+// console.log(test.calculateYearDiscount());
