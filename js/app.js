@@ -1,5 +1,6 @@
 // Variables(select form):
 const form = document.querySelector("#request-quote");
+const html = new HTMLUI();
 // Config information.
 const config = {
   // Default price.
@@ -29,7 +30,7 @@ document.addEventListener("submit", submitForm);
 // Functions:
 // when the entire page is loaded,will show displayYear().
 function afterLoad() {
-  displayYears();
+  html.displayYears();
 }
 // read form value.
 function readFormValues() {
@@ -42,7 +43,7 @@ function readFormValues() {
 // validation form. Checks if the inputs are empty, displays the displayMsg function.
 function validateForm(make, year, level) {
   if (make === "" || year === "" || level === "") {
-    displayMsg("لطفاً مقادیر فرم را با دقت پر نمایید. با تشکر");
+    html.displayMsg("لطفاً مقادیر فرم را با دقت پر نمایید. با تشکر");
     return false;
   }
   return true;
@@ -64,7 +65,8 @@ function submitForm(e) {
     // STEP2: calculate
     // calculatePrice(insuranceCase);
     // STEP3: show result message box
-    showResult(calculatePrice(insuranceCase), insuranceCase);
+    const insurance = new InsuranceProcess(make, year, level);
+    html.showResult(insurance.calculatePrice(insuranceCase), insuranceCase);
   }
 }
 // It takes the base price and multiplier(make1,make2,make3) of the car and shows a base price of each car model.
@@ -85,49 +87,7 @@ function calculateYearDiscount(year, price) {
   // 3% cheaper for each year
   return price - ((diffrence(year) * 3) / 100) * price;
 }
-// It takes the info and shows the price of each car.
-function calculatePrice(info) {
-  // Calculate Make Price
-  let price = calculateMakePrice(info.make, config.base);
 
-  // Calculate Year Discount
-  const year = info.year;
-  price = calculateYearDiscount(year, price);
-
-  // Calculate Level Price
-  const level = info.level;
-  price = calculateLevel(level, price);
-  // show price:
-  return price;
-}
-// It takes the amount of the insurance level and the price and gives a price according to the type of insurance.
-function calculateLevel(level, price) {
-  // basic   =>  increase 30%
-  // complete=>  increase 50%
-  if (level == "basic") {
-    // price = price + (price * 0.30) (bara mehrdad)
-    price = price * config.level.basic;
-  } else {
-    price = price * config.level.complete;
-  }
-  return price;
-}
-// User Interface (UI) Functions:
-// Display message box:get a message and return an error.
-function displayMsg(msg) {
-  // create message box
-  const messageBox = document.createElement("div");
-  messageBox.classList = "error";
-  messageBox.innerText = msg;
-
-  // show message
-  form.insertBefore(messageBox, document.querySelector(".form-group"));
-
-  // remove message box
-  setTimeout(() => {
-    document.querySelector(".error").remove();
-  }, 5000);
-}
 // fix numbers and Number conversion function.
 fixNumbers = function (str = "") {
   // Convert to number
@@ -162,26 +122,6 @@ fixNumbers = function (str = "") {
   }
   return parseInt(str);
 };
-// Show Years into the DOM.
-function displayYears() {
-  // access to the select tag
-  const selectYear = document.querySelector("#year");
-  // create first option tag for title
-  // create option tag
-  const optionTag = document.createElement("option");
-  optionTag.innerText = `- انتخاب -`;
-  // append option to the selectYear
-  selectYear.appendChild(optionTag);
-  // create for loop for making option tag
-  for (let i = maxYear(); i >= diffrence(config.yearDifference); i--) {
-    // create option tag
-    const optionTag = document.createElement("option");
-    optionTag.value = i;
-    optionTag.innerText = `سال ${i}`;
-    // append option to the selectYear
-    selectYear.appendChild(optionTag);
-  }
-}
 // Finding the difference between the highest and lowest year.get a number,And returns a year.
 const diffrence = function (year) {
   year = maxYear() - year;
@@ -195,56 +135,6 @@ function maxYear() {
   // convert to number.
   let max = fixNumbers(nowYear);
   return max;
-}
-
-function showResult(price, info) {
-  // access to the div result.
-  const result = document.querySelector("#result");
-
-  // create div for showing price
-  const div = document.createElement("div");
-
-  // convert make.
-  let make = info.make;
-
-  switch (make) {
-    case 1:
-      make = "پراید";
-      break;
-    case 2:
-      make = "اپتیما";
-      break;
-    case 3:
-      make = "پورشه";
-      break;
-  }
-
-  // convert level to the persian.
-  let level = info.level;
-  if (level == "basic") {
-    level = "ساده";
-  } else {
-    level = "کامل";
-  }
-
-  // template for show result
-  div.innerHTML = `
-  <p class="header">خلاصه فاکتور</p>
-  <p>Car Model: ${make}</p>
-  <p>Date Create: ${info.year}</p>
-  <p>Car Level: ${level}</p>
-  <p class="total">Final Price: ${price}</p>`;
-
-  // show spinner:
-  const spinner = document.querySelector("#loading img");
-  spinner.style.display = "block";
-
-  setTimeout(() => {
-    // hide spinner after 3 second.
-    spinner.style.display = "none";
-    // append div to the result.
-    result.appendChild(div);
-  }, 3000);
 }
 
 // // oop:
